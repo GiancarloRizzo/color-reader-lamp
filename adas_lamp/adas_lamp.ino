@@ -21,12 +21,12 @@
 #define RST_PIN 9     
 #define SS_PIN_1 8   
 #define SS_PIN_2 10
-#define SS_PIN_3 7
+#define SS_PIN_3 5
 
 #define STRIP_DATA_PIN 6
 #define NUM_LEDS 33
 
-#define DEBUG false
+#define DEBUG true
 #define Serial if(DEBUG)Serial
 
 
@@ -50,7 +50,8 @@ String uid2 = "";
 String uid3 = "";
 
 int pixels_delay = 0;
-int card_delay = 200;
+int card_delay = 100;
+int rainbow_delay = 300;
 
 
 void init_readers(void);
@@ -113,7 +114,7 @@ void loop() {
     uid3="";
     Serial.println("no Card detected");
   }
-  
+  delay(card_delay);
   calc_color(uid1, uid2, uid3); 
   reset_uids();
 }
@@ -126,8 +127,11 @@ void calc_color(String uid1, String uid2, String uid3){
   Serial.println(uid1);
   Serial.println(uid2);
   Serial.println(uid3);
-  
-  if (uid1==yellow_card){
+
+  if (uid1==yellow_card && uid2==blue_card && uid3==red_card){
+    Serial.println("rainbow");
+    rainbow_surprise(grb);
+  } else if (uid1==yellow_card){
     if(uid2==blue_card){
       Serial.println("yellow:green");
       green(grb);
@@ -160,9 +164,6 @@ void calc_color(String uid1, String uid2, String uid3){
       Serial.println("red");
       red(grb);
     }
-  } else if (uid1==yellow_card && uid2==blue_card && uid3==red_card){
-    Serial.println("rainbow");
-    rainbow_surprise(grb);
   } else {
     Serial.println("black");
     black(grb);
@@ -195,6 +196,7 @@ void control_pixels(int g, int r , int b){
 void init_readers(){
   mfrc522_1.PCD_Init();
   mfrc522_2.PCD_Init();
+  mfrc522_3.PCD_Init();
 }
 
 
@@ -242,38 +244,37 @@ void white(int grb[]){
 }
 
 void rainbow_surprise(int grb[]){   
-  grb = yellow();
+  yellow(grb);
   control_pixels(grb[0],grb[1],grb[2]);
   pixels.show();
   delay(rainbow_delay);
   
-  grb = orange();
+  orange(grb);
   control_pixels(grb[0],grb[1],grb[2]);
   pixels.show();
   delay(rainbow_delay);
   
-  grb = red();
+  red(grb);
   control_pixels(grb[0],grb[1],grb[2]);
   pixels.show();
   delay(rainbow_delay);
   
-  grb = violet();
+  violet(grb);
   control_pixels(grb[0],grb[1],grb[2]);
   pixels.show();
   delay(rainbow_delay);
   
-  grb = blue();
+  blue(grb);
   control_pixels(grb[0],grb[1],grb[2]);
   pixels.show();
   delay(rainbow_delay);
   
-  grb = green();
+  green(grb);
   control_pixels(grb[0],grb[1],grb[2]);
   pixels.show();
   delay(rainbow_delay);
   
-  grb = white();
+  white(grb);
   control_pixels(grb[0],grb[1],grb[2]);
   pixels.show();
-  delay(rainbow_delay);
 }
